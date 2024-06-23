@@ -16,6 +16,7 @@ exports.userName = (req, res, next) => {
 };
 
 exports.authentication = async (req, res, next) => {
+
   const { email, password } = req.body;
 
   const user = await user_authentication_schema.find({ email: email });
@@ -36,18 +37,16 @@ exports.authentication = async (req, res, next) => {
         );
 
         console.log(jwtGenerator);
-        res
-          .status(200)
-          .cookie("jwtToken", jwtGenerator, {
-            httpOnly: true,
-            secure: false, // Set to true in production to use HTTPS
-            expires: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
-          })
-          .json({
-            success: true,
-            message: "User found",
-            user: user,
-          });
+        res.status(200).cookie('jwtToken', jwtGenerator, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production', // Set to true in production
+          sameSite: 'None',
+          expires: new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+        }).json({
+          success: true,
+          message: 'User found',
+          user: user,
+        });
       } else {
         res.status(401).json({
           success: false,

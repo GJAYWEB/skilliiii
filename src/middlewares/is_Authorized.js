@@ -3,8 +3,9 @@ const SECRET_KEY = "MySecretKey";
 
 module.exports = (req, res, next) => {
   const token = req.cookies.jwtToken;
-  console.log(token);
+  console.log("Token: " +token);
 
+  
   if (token) {
     jwt.verify(token, SECRET_KEY, (err, user) => {
       if (err) {

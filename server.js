@@ -14,6 +14,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+console.log(process.env.CLIENT_ORIGIN)
 // Use CORS middleware
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN, // Replace with your client's origin
