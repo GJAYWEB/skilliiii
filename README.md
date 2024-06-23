@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 app.post('/contact', (req, res) => {
     const { email, name, phoneNumber, comments } = req.body;
 
@@ -32,3 +33,7 @@ app.post('/contact', (req, res) => {
         }
     });
 });
+=======
+# skilliiii
+Resume Web App
+>>>>>>> c86f61b7bfe0f600073b754b3c91899d8b03231a
