@@ -97,7 +97,8 @@ exports.contact = (req, res, next) => {
       res.status(500).send("Error: Email could not be sent");
     } else {
       console.log("Email sent: " + info.response);
-      res.status(200).send("Email sent successfully");
+      res.status(200).json({ message: "Email sent successfully" });
+
     }
   });
 };
