@@ -243,12 +243,22 @@ exports.emailVarifier = async (req, res, next) => {
     });
   }
 };
-
 exports.logout = (req, res, next) => {
-  res.clearCookie("jwtToken").json({
-    message: "Logout successfully!",
+  // Clear the JWT token cookie
+  res.clearCookie("jwtToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    sameSite: 'None'
+  });
+
+  // Respond with a successful logout message
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully!"
   });
 };
+
+
 
 exports.forgotPassword = (req, res, next) => {
   const email = req.body.email;
