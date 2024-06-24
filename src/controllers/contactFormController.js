@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const nodemailer = require("nodemailer");
 
 exports.contact = (req, res, next) => {
@@ -10,9 +10,15 @@ exports.contact = (req, res, next) => {
       pass: process.env.EMAIL_PASS,
     },
   });
-  
+
   // Function to generate HTML sections
-  function generateHTMLContent({ name, email, linkedIn, phoneNumber, comments }) {
+  function generateHTMLContent({
+    name,
+    email,
+    linkedIn,
+    phoneNumber,
+    comments,
+  }) {
     let htmlContent = `
       <!DOCTYPE html>
       <html lang="en">
@@ -63,14 +69,16 @@ exports.contact = (req, res, next) => {
 
     // Generate HTML sections sequentially
     function generateSection(label, value) {
-      return value ? `<tr><td><strong>${label}:</strong></td><td>${value}</td></tr>` : '';
+      return value
+        ? `<tr><td><strong>${label}:</strong></td><td>${value}</td></tr>`
+        : "";
     }
-    
-    htmlContent += generateSection('Name', name);
-    htmlContent += generateSection('Email', email);
-    htmlContent += generateSection('LinkedIn', linkedIn);
-    htmlContent += generateSection('Phone Number', phoneNumber);
-    htmlContent += generateSection('Comments', comments);
+
+    htmlContent += generateSection("Name", name);
+    htmlContent += generateSection("Email", email);
+    htmlContent += generateSection("LinkedIn", linkedIn);
+    htmlContent += generateSection("Phone Number", phoneNumber);
+    htmlContent += generateSection("Comments", comments);
 
     htmlContent += `
           </table>
@@ -94,11 +102,10 @@ exports.contact = (req, res, next) => {
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.log(error);
-      res.status(500).send("Error: Email could not be sent");
+      res.status(500).send({ success: false, Error: "Email could not be sent" });
     } else {
       console.log("Email sent: " + info.response);
-      res.status(200).json({ message: "Email sent successfully" });
-
+      res.status(200).json({ success: true, message: "Email sent successfully" });
     }
   });
 };
