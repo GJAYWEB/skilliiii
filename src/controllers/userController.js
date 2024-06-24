@@ -61,7 +61,6 @@ exports.authentication = async (req, res, next) => {
     });
   }
 };
-
 exports.signin = async (req, res, next) => {
   // Generate a secret key
   const secret = speakeasy.generateSecret({ length: 20 });
@@ -84,8 +83,12 @@ exports.signin = async (req, res, next) => {
     to: `${email}`,
     subject: "Email Verification Link",
     html: `
-      <html>
+      <!DOCTYPE html>
+      <html lang="en">
       <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Email Verification</title>
         <style>
           body {
             font-family: Arial, sans-serif;
@@ -127,6 +130,16 @@ exports.signin = async (req, res, next) => {
           .button:visited {
             color: #ffffff;
           }
+          .otp {
+            text-align: center;
+            font-size: 36px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+          }
         </style>
       </head>
       <body>
@@ -135,7 +148,11 @@ exports.signin = async (req, res, next) => {
             <h2>Email Verification</h2>
           </div>
           <div class="content">
-            <p>OTP: ${token}</p>
+            <p>Hello,</p>
+            <p>Thank you for signing up with us. Please use the following OTP to verify your email:</p>
+            <div class="otp">${token}</div>
+            <p>If you didn't request this, you can safely ignore this email.</p>
+            <p>Best Regards,<br>Your Application Team</p>
           </div>
         </div>
       </body>
@@ -172,6 +189,7 @@ exports.signin = async (req, res, next) => {
     }
   });
 };
+
 
 exports.emailVarifier = async (req, res, next) => {
   const { token } = req.body;
