@@ -14,14 +14,56 @@ exports.contact = (req, res, next) => {
   // Function to generate HTML sections
   function generateHTMLContent({ name, email, linkedIn, phoneNumber, comments }) {
     let htmlContent = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;">
-            <h2 style="color: #333;">New Contact Form Submission from </h2> ${req.user.email}
-            <table style="width: 100%; border-collapse: collapse;">
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Contact Form Submission</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+          }
+          .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          td {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+          }
+          td strong {
+            font-weight: bold;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h2>New Contact Form Submission</h2>
+          </div>
+          <table>
     `;
 
     // Generate HTML sections sequentially
     function generateSection(label, value) {
-      return value ? `<tr><td style="padding: 10px; border-bottom: 1px solid #ccc;"><strong>${label}:</strong></td><td style="padding: 10px; border-bottom: 1px solid #ccc;">${value}</td></tr>` : '';
+      return value ? `<tr><td><strong>${label}:</strong></td><td>${value}</td></tr>` : '';
     }
     
     htmlContent += generateSection('Name', name);
@@ -31,8 +73,10 @@ exports.contact = (req, res, next) => {
     htmlContent += generateSection('Comments', comments);
 
     htmlContent += `
-            </table>
+          </table>
         </div>
+      </body>
+      </html>
     `;
 
     return htmlContent;
