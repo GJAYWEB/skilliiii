@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken");
-const SECRET_KEY = "MySecretKey";
+require('dotenv').config();
 
 module.exports = (req, res, next) => {
   const token = req.cookies.jwtToken;
   console.log("Token: " +token);
 
-  
+
   if (token) {
-    jwt.verify(token, SECRET_KEY, (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
       if (err) {
         console.error("JWT verification error:", err);
         res.status(401).send({ err: err });
