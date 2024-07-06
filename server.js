@@ -22,14 +22,17 @@ app.use(cors({
 
 // Session middleware
 // Session middleware
+
 app.use(session({
-  secret: process.env.SESSION_SECRET, // Use the session secret from .env
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
+  store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
   cookie: {
-    secure: true, // Set to true only in production
-    httpOnly: true, // Prevent client-side JavaScript from accessing cookies
-    maxAge: 24 * 60 * 60 * 1000 // Cookie expiration time (24 hours in milliseconds)
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    httpOnly: true,
+    secure: true, // Set to true if HTTPS
+    sameSite: 'None' // For cross-site cookies
   }
 }));
 

@@ -183,7 +183,7 @@ exports.authentication = async (req, res, next) => {
         } else {
           req.session.emailToken = token;
           req.session.userData = userData;
-
+          console.log('Session data:', req.session); 
           // Explicitly save the session
           req.session.save((err) => {
             if (err) {
@@ -202,12 +202,13 @@ exports.authentication = async (req, res, next) => {
     }
   });
 };
-
 exports.emailVarifier = async (req, res, next) => {
+  // Extract the token from the request body
   const { token } = req.body;
   console.log("Received token:", token);
   console.log("Session token:", req.session.emailToken);
 
+  // Check if the token is provided in the request
   if (!token) {
     return res.status(400).json({
       success: false,
@@ -215,6 +216,7 @@ exports.emailVarifier = async (req, res, next) => {
     });
   }
 
+  // Check if the session has the emailToken set
   if (!req.session.emailToken) {
     return res.status(400).json({
       success: false,
@@ -222,13 +224,15 @@ exports.emailVarifier = async (req, res, next) => {
     });
   }
 
+  // Verify the provided token against the session token
   if (req.session.emailToken !== token) {
     return res.status(401).json({
       success: false,
-      message: "Email verification error!",
+      message: "Invalid or expired token",
     });
   }
 
+  // Retrieve user data from the session
   const userData = req.session.userData;
   if (!userData) {
     return res.status(400).json({
@@ -238,10 +242,11 @@ exports.emailVarifier = async (req, res, next) => {
   }
 
   try {
+    // Create a new user document and save it to the database
     const user = new user_authentication_schema(userData);
     await user.save();
 
-    // Destroy the session after saving the user
+    // Destroy the session after successfully saving the user
     req.session.destroy((err) => {
       if (err) {
         console.error("Session destruction error:", err);
