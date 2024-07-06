@@ -11,21 +11,18 @@ const bodyParser = require('body-parser');
 
 // Use CORS middleware
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN, // Replace with your client's origin
+  origin: process.env.CLIENT_ORIGIN, // Your client's origin (e.g., 'https://skilliii-qqu5vb3o3-jaykumars-projects.vercel.app')
   credentials: true // Allow credentials (cookies, authorization headers, etc.)
 }));
-
 
 // Middleware setup
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-
-
 // Session middleware
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET, // Replace with a strong secret key
   resave: false,
   saveUninitialized: true,
   store: MongoStore.create({
@@ -47,13 +44,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Origin', 'https://skilliii-qqu5vb3o3-jaykumars-projects.vercel.app');
-  next();
-});
-
-
+// Routes
 const resumeRoutes = require('./src/routes/resumeRoutes');
 const contactFormRoutes = require('./src/routes/contactFormRoutes');
 const userRoutes = require('./src/routes/userRoutes');

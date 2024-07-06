@@ -172,40 +172,44 @@ exports.signin = async (req, res, next) => {
     token: token,
   });
 
-  user_authentication_schema.find({ email: email }).then((user) => {
-    if (user.length != 0) {
-      res.status(200).json({
-        success: true,
-        message: "User with provided email id already exists. Try Login In!!",
-      });
-    } else {
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log(error);
-          res.status(500).send("Error: Email could not be sent");
-        } else {
-          req.session.token =  token;
-          req.session.userData = userData;
-          console.log("Session data:", req.session);
-          // Explicitly save the session
-          req.session.save((err) => {
-            if (err) {
-              console.error("Session save error:", err);
-              return res.status(500).send("Error saving session");
-            }
+  try {
+    const existingUser = await user_authentication_schema.findOne({ email: email });
 
-            console.log("Session after saving:", req.session);
-            res.status(200).json({
-              success: true,
-              message:
-                "Email has been sent for verification. Please check your inbox!!",
-            });
-          });
-        }
+    if (existingUser) {
+      return res.status(200).json({
+        success: true,
+        message: "User with provided email id already exists. Try Logging In!!",
       });
     }
-  });
+
+    await transporter.sendMail(mailOptions);
+
+    req.session.token = token;
+    req.session.userData = userData;
+
+    req.session.save((err) => {
+      if (err) {
+        console.error("Session save error:", err);
+        return res.status(500).send("Error saving session");
+      }
+
+      console.log("Session after saving:", req.session);
+
+      res.status(200).json({
+        success: true,
+        message: "Email has been sent for verification. Please check your inbox!!",
+      });
+    });
+
+  } catch (error) {
+    console.error("Error in signIn:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 };
+
 exports.emailVarifier = async (req, res, next) => {
   // Extract the token from the request body
   const { token } = req.body;
