@@ -1,18 +1,15 @@
 // Load environment variables from .env file
 require('dotenv').config();
-
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const cors = require('cors');
+const MongoStore = require('connect-mongo');
 
 // Middleware setup
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(cookieParser());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 // Use CORS middleware
 app.use(cors({
@@ -21,18 +18,21 @@ app.use(cors({
 }));
 
 // Session middleware
-// Session middleware
-
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
+  store: MongoStore.create({
+    mongoUrl: `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/${process.env.DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`,
+    mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true }
+  }),
   cookie: {
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    path: '/',
     httpOnly: true,
-    secure: true, // Set to true if HTTPS
-    sameSite: 'None' // For cross-site cookies
-  }
+    secure: process.env.NODE_ENV === 'production', // Set to true only in production
+    sameSite: 'None', // Ensure this is consistent with your frontend's cookie settings
+    maxAge: 86400000, // 24 hours
+  },
 }));
 
 // Add logging middleware to debug sessions

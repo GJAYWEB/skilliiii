@@ -246,6 +246,10 @@ exports.emailVarifier = async (req, res, next) => {
     const user = new user_authentication_schema(userData);
     await user.save();
 
+    // Clear the session token and user data after successfully saving the user
+    req.session.emailToken = null;
+    req.session.userData = null;
+
     // Destroy the session after successfully saving the user
     req.session.destroy((err) => {
       if (err) {
@@ -270,6 +274,7 @@ exports.emailVarifier = async (req, res, next) => {
     });
   }
 };
+
 
 exports.logout = (req, res, next) => {
   // Clear the JWT token cookie
