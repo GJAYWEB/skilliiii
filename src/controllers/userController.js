@@ -206,7 +206,7 @@ exports.emailVarifier = async (req, res, next) => {
   // Extract the token from the request body
   const { token } = req.body;
   console.log("Received token:", token);
-  console.log("Session token:", req.session.emailToken);
+  console.log("Session token:", req.session);
 
   // Check if the token is provided in the request
   if (!token) {
