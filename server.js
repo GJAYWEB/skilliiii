@@ -15,6 +15,7 @@ app.use(cors({
   credentials: true // Allow credentials (cookies, authorization headers, etc.)
 }));
 
+
 // Middleware setup
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -45,6 +46,13 @@ app.use((req, res, next) => {
   console.log("Session data:", req.session);
   next();
 });
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Origin', 'https://skilliii-qqu5vb3o3-jaykumars-projects.vercel.app');
+  next();
+});
+
 
 const resumeRoutes = require('./src/routes/resumeRoutes');
 const contactFormRoutes = require('./src/routes/contactFormRoutes');
