@@ -7,6 +7,7 @@ const session = require('express-session');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const MongoStore = require('connect-mongo');
+const bodyParser = require('body-parser');
 
 // Use CORS middleware
 app.use(cors({
