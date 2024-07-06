@@ -60,8 +60,7 @@ exports.authentication = async (req, res, next) => {
       message: "User not found",
     });
   }
-};
-exports.signin = async (req, res, next) => {
+};exports.signin = async (req, res, next) => {
   // Generate a secret key
   const secret = speakeasy.generateSecret({ length: 20 });
 
@@ -70,7 +69,9 @@ exports.signin = async (req, res, next) => {
     secret: secret.base32,
     encoding: "base32",
   });
+  
   const { email, password } = req.body;
+
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -78,6 +79,7 @@ exports.signin = async (req, res, next) => {
       pass: process.env.EMAIL_PASS,
     },
   });
+
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: `${email}`,
@@ -159,12 +161,14 @@ exports.signin = async (req, res, next) => {
       </html>
     `,
   };
+
   const hashedPassword = await bcrypt.hash(password, 10);
   const userData = new user_authentication_schema({
     email: email,
     password: hashedPassword,
     token: token,
   });
+
   user_authentication_schema.find({ email: email }).then((user) => {
     if (user.length != 0) {
       res.status(200).json({
@@ -179,10 +183,19 @@ exports.signin = async (req, res, next) => {
         } else {
           req.session.emailToken = token;
           req.session.userData = userData;
-          res.status(200).json({
-            success: true,
-            message:
-              "Email has been sent for verification. Please check your inbox!!",
+
+          // Explicitly save the session
+          req.session.save((err) => {
+            if (err) {
+              console.error("Session save error:", err);
+              return res.status(500).send("Error saving session");
+            }
+
+            console.log("Session after saving:", req.session);
+            res.status(200).json({
+              success: true,
+              message: "Email has been sent for verification. Please check your inbox!!",
+            });
           });
         }
       });

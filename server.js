@@ -21,12 +21,13 @@ app.use(cors({
 }));
 
 // Session middleware
+// Session middleware
 app.use(session({
   secret: process.env.SESSION_SECRET, // Use the session secret from .env
   resave: false,
   saveUninitialized: true,
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Set to true only in production
+    secure: true, // Set to true only in production
     httpOnly: true, // Prevent client-side JavaScript from accessing cookies
     maxAge: 24 * 60 * 60 * 1000 // Cookie expiration time (24 hours in milliseconds)
   }
