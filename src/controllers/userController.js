@@ -184,7 +184,8 @@ exports.signin = async (req, res, next) => {
           console.log(error);
           res.status(500).send("Error: Email could not be sent");
         } else {
-          req.session.cookie = { token, userData };
+          req.session.token =  token;
+          req.session.userData = userData;
           console.log("Session data:", req.session);
           // Explicitly save the session
           req.session.save((err) => {
