@@ -14,23 +14,29 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-
 // Use CORS middleware
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN, // Replace with your client's origin
   credentials: true // Allow credentials (cookies, authorization headers, etc.)
 }));
 
+// Session middleware
 app.use(session({
   secret: process.env.SESSION_SECRET, // Use the session secret from .env
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   cookie: {
-    secure: false, // Set to true in production to enable secure cookies over HTTPS
+    secure: process.env.NODE_ENV === 'production', // Set to true only in production
     httpOnly: true, // Prevent client-side JavaScript from accessing cookies
     maxAge: 24 * 60 * 60 * 1000 // Cookie expiration time (24 hours in milliseconds)
   }
 }));
+
+// Add logging middleware to debug sessions
+app.use((req, res, next) => {
+  console.log("Session data:", req.session);
+  next();
+});
 
 const resumeRoutes = require('./src/routes/resumeRoutes');
 const contactFormRoutes = require('./src/routes/contactFormRoutes');

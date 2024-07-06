@@ -190,7 +190,6 @@ exports.signin = async (req, res, next) => {
   });
 };
 
-
 exports.emailVarifier = async (req, res, next) => {
   const { token } = req.body;
   console.log("Received token:", token);
@@ -200,6 +199,13 @@ exports.emailVarifier = async (req, res, next) => {
     return res.status(400).json({
       success: false,
       message: "Token is required",
+    });
+  }
+
+  if (!req.session.emailToken) {
+    return res.status(400).json({
+      success: false,
+      message: "Session token is missing",
     });
   }
 
@@ -221,6 +227,8 @@ exports.emailVarifier = async (req, res, next) => {
   try {
     const user = new user_authentication_schema(userData);
     await user.save();
+
+    // Destroy the session after saving the user
     req.session.destroy((err) => {
       if (err) {
         console.error("Session destruction error:", err);
@@ -229,6 +237,7 @@ exports.emailVarifier = async (req, res, next) => {
           message: "Error destroying session after saving user",
         });
       }
+
       res.status(200).json({
         success: true,
         message: "Email has been verified!",
@@ -243,6 +252,7 @@ exports.emailVarifier = async (req, res, next) => {
     });
   }
 };
+
 exports.logout = (req, res, next) => {
   // Clear the JWT token cookie
   res.clearCookie("jwtToken", {
@@ -257,7 +267,6 @@ exports.logout = (req, res, next) => {
     message: "Logged out successfully!"
   });
 };
-
 
 
 exports.forgotPassword = (req, res, next) => {
