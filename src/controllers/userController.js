@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const { v4: uuidv4 } = require("uuid");
@@ -16,11 +16,10 @@ exports.userName = (req, res, next) => {
 };
 
 exports.authentication = async (req, res, next) => {
-
   const { email, password } = req.body;
 
   const user = await user_authentication_schema.find({ email: email });
-  
+
   if (user.length !== 0) {
     const _id = user[0]._id;
     if (user[0].password !== 0) {
@@ -37,16 +36,19 @@ exports.authentication = async (req, res, next) => {
         );
 
         console.log(jwtGenerator);
-        res.status(200).cookie('jwtToken', jwtGenerator, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production', // Set to true in production
-          sameSite: 'None',
-          expires: new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
-        }).json({
-          success: true,
-          message: 'User found',
-          user: user,
-        });
+        res
+          .status(200)
+          .cookie("jwtToken", jwtGenerator, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Set to true in production
+            sameSite: "None",
+            expires: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+          })
+          .json({
+            success: true,
+            message: "User found",
+            user: user,
+          });
       } else {
         res.status(401).json({
           success: false,
@@ -60,7 +62,8 @@ exports.authentication = async (req, res, next) => {
       message: "User not found",
     });
   }
-};exports.signin = async (req, res, next) => {
+};
+exports.signin = async (req, res, next) => {
   // Generate a secret key
   const secret = speakeasy.generateSecret({ length: 20 });
 
@@ -69,7 +72,7 @@ exports.authentication = async (req, res, next) => {
     secret: secret.base32,
     encoding: "base32",
   });
-  
+
   const { email, password } = req.body;
 
   const transporter = nodemailer.createTransport({
@@ -183,7 +186,7 @@ exports.authentication = async (req, res, next) => {
         } else {
           req.session.emailToken = token;
           req.session.userData = userData;
-          console.log('Session data:', req.session); 
+          console.log("Session data:", req.session);
           // Explicitly save the session
           req.session.save((err) => {
             if (err) {
@@ -194,7 +197,8 @@ exports.authentication = async (req, res, next) => {
             console.log("Session after saving:", req.session);
             res.status(200).json({
               success: true,
-              message: "Email has been sent for verification. Please check your inbox!!",
+              message:
+                "Email has been sent for verification. Please check your inbox!!",
             });
           });
         }
@@ -206,7 +210,7 @@ exports.emailVarifier = async (req, res, next) => {
   // Extract the token from the request body
   const { token } = req.body;
   console.log("Received token:", token);
-  console.log("Session token:", req.session);
+  console.log("Session data before verification:", req.session);
 
   // Check if the token is provided in the request
   if (!token) {
@@ -259,7 +263,7 @@ exports.emailVarifier = async (req, res, next) => {
           message: "Error destroying session after saving user",
         });
       }
-
+      console.log("Session data before verification:", req.session);
       res.status(200).json({
         success: true,
         message: "Email has been verified!",
@@ -275,22 +279,20 @@ exports.emailVarifier = async (req, res, next) => {
   }
 };
 
-
 exports.logout = (req, res, next) => {
   // Clear the JWT token cookie
   res.clearCookie("jwtToken", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-    sameSite: 'None'
+    secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+    sameSite: "None",
   });
 
   // Respond with a successful logout message
   res.status(200).json({
     success: true,
-    message: "Logged out successfully!"
+    message: "Logged out successfully!",
   });
 };
-
 
 exports.forgotPassword = (req, res, next) => {
   const email = req.body.email;

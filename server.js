@@ -5,17 +5,21 @@ const app = express();
 const mongoose = require('mongoose');
 const session = require('express-session');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const MongoStore = require('connect-mongo');
-
-// Middleware setup
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
 // Use CORS middleware
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN, // Replace with your client's origin
   credentials: true // Allow credentials (cookies, authorization headers, etc.)
 }));
+
+// Middleware setup
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(cookieParser());
+
+
 
 // Session middleware
 app.use(session({
